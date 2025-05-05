@@ -13,8 +13,11 @@ while True:
     seq, ack_flag, recv_checksum, payload = parse_packet(data)
 
     if calculate_checksum(payload) != recv_checksum:
-        print(f"[CORRUPT] Pacote corrompido ignorado.")
+        print(f"[CORRUPT] Pacote corrompido. Enviando NACK.")
+        nack = make_packet(expected_seq, b'', ack_flag=2)
+        server.sendto(nack, addr)
         continue
+
 
     if seq == expected_seq:
         print(f"[RECEBIDO] Seq={seq} | Data={payload.decode()}")

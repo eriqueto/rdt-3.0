@@ -36,14 +36,18 @@ def send_data(data):
                 continue
 
             if ack_flag == 1 and ack_seq == seq:
+                # ACK válido
                 rtt_sample = time.time() - start
-                rtt_est = (1 - ALPHA) * rtt_est + ALPHA * rtt_sample #formula de cálculo de tempo
-                client.settimeout(rtt_est) #atualiza o timeout para o novo
+                rtt_est = (1 - ALPHA) * rtt_est + ALPHA * rtt_sample
+                client.settimeout(rtt_est)
                 print(f"[ACK] Recebido ACK {ack_seq} | RTT: {rtt_sample:.4f} | Timeout: {rtt_est:.4f}")
                 seq ^= 1
                 break
+            elif ack_flag == 2 and ack_seq == seq:
+            # NACK recebido, retransmitir imediatamente
+                print(f"[NACK] Recebido para seq={seq}. Retransmitindo.")         
         except socket.timeout:
             print(f"[TIMEOUT] Retransmitindo seq={seq}")
 
-for i in range(10):
+for i in range(10): # manda 10 pacotes
     send_data(f"Msg {i}".encode())

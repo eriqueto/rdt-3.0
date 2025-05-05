@@ -23,9 +23,10 @@ def calculate_checksum(data: bytes) -> int:
     return count % 256 
 
 
-def make_packet(seq, data: bytes) -> bytes:
+def make_packet(seq, data: bytes, ack_flag=0) -> bytes:
     checksum = calculate_checksum(data)
-    return struct.pack('!B B H', seq, 0, checksum) + data
+    return struct.pack('!B B H', seq, ack_flag, checksum) + data
+
 
 def parse_packet(packet: bytes):
     seq, ack, checksum = struct.unpack('!B B H', packet[:4])
